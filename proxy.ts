@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 /**
  * Next.js Middleware: 페이지 및 API 경로 접근 권한을 공통으로 제어하는 보초병 역할을 수행합니다.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // 1. 요청 경로(Pathname)와 현재 로그인 쿠키 획득
   const requestPath = request.nextUrl.pathname;
   const authTokenCookie = request.cookies.get("auth_token");
