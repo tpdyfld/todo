@@ -1,0 +1,31 @@
+// 데이터베이스 연결 설정. 클라우드 PostgreSQL 서비스인 NeonDB를 사용하며, provider만 설정합니다.
+// 연결 주소는 prisma.config.ts에 정의된 대로 .env의 DATABASE_URL을 참조합니다.
+datasource db {
+  provider = "postgresql"
+}
+
+// Prisma Client 자바스크립트/타입스크립트 라이브러리 생성을 위한 제너레이터 설정
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 사용자(User) 정보를 저장할 모델 정의
+model User {
+  id        Int      @id @default(autoincrement()) // 고유 식별자 (자동 증가하는 정수형 기본키)
+  username  String   @unique                       // 사용자 계정 아이디 (고유값 설정)
+  password  String                                 // 암호화(해싱)된 비밀번호
+  createdAt DateTime @default(now())                 // 계정 생성 날짜 및 시간
+  todos     Todo[]                                 // 사용자가 작성한 할 일 목록과의 1:N 관계 정의
+}
+
+// 할 일(Todo) 데이터를 저장할 모델 정의
+model Todo {
+  id         Int      @id @default(autoincrement()) // 고유 식별자 (자동 증가하는 정수형 기본키)
+  text       String                                 // 할 일 내용
+  completed  Boolean  @default(false)               // 완료 상태 여부 (기본값은 false, 진행 중)
+  createdAt  DateTime @default(now())                 // 데이터 생성 날짜 및 시간 (기본값은 현재 시간)
+  targetDate String   @default("")                  // 할 일이 할당된 목표 날짜 (포맷: YYYY-MM-DD)
+  color      String   @default("slate")             // 할 일의 테마 색상 (예: rose, blue, emerald, violet, slate)
+  userId     Int                                    // 이 할 일을 소유한 사용자 계정의 고유 식별자 (외래키)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // User 모델과의 N:1 관계 선언 (탈퇴 시 하위 Todo 전체 연쇄 삭제)
+}
